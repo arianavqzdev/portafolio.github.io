@@ -36,7 +36,7 @@ const productos = [
         imagen: "https://plus.unsplash.com/premium_photo-1673282160288-9d5381f471af?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     {
-        id: 9, nombre: "Maicenitas", descripcion: "masa suave a base de almidón de maíz rellenadas con abundante dulce de leche y coco rallado espolvoreado a los costados.", precio: "1.800", categoria: "pasteleria",
+        id: 9, nombre: "Maicenitas", descripcion: "Masa suave a base de almidón de maíz rellenadas con abundante dulce de leche y coco rallado espolvoreado a los costados.", precio: "1.800", categoria: "pasteleria",
         imagen: "https://images.unsplash.com/photo-1552552492-9c335658343d?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     {
@@ -75,7 +75,7 @@ const tabs = document.querySelectorAll('.tab-item');
 const menuContainer = document.getElementById('menu-container');
 const titleClassics = document.getElementById('title-classics');
 
-// Estado inicial (Ahora arranca mostrando todos)
+// Estado inicial
 let categoriaActual = 'todos';
 let busquedaActual = '';
 
@@ -92,11 +92,14 @@ const nombresCategorias = {
 function renderizarMenu() {
     menuContainer.innerHTML = '';
 
-    // Filtrar productos (AQUÍ ESTÁ LA MAGIA DEL "TODOS")
+    // Filtrar productos por nombre O descripción
     const productosFiltrados = productos.filter(producto => {
-        // Si la categoría es 'todos', siempre da true, sino compara con la categoría del producto
         const coincideCategoria = categoriaActual === 'todos' || producto.categoria === categoriaActual;
-        const coincideBusqueda = producto.nombre.toLowerCase().includes(busquedaActual.toLowerCase());
+        
+        const termino = busquedaActual.toLowerCase();
+        const coincideBusqueda = producto.nombre.toLowerCase().includes(termino) || 
+                                 producto.descripcion.toLowerCase().includes(termino);
+        
         return coincideCategoria && coincideBusqueda;
     });
 
@@ -135,11 +138,11 @@ function renderizarMenu() {
     });
 }
 
-// 4. Listeners
+// 4. Listeners (Buscador y Pestañas)
 if (searchInput) {
     searchInput.addEventListener('input', (e) => {
         busquedaActual = e.target.value; 
-        renderizarMenu(); // Actualiza el menú en tiempo real al escribir
+        renderizarMenu(); // Actualiza en tiempo real al escribir
     });
 }
 
@@ -147,18 +150,11 @@ tabs.forEach(tab => {
     tab.addEventListener('click', () => {
         tabs.forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
-        categoriaActual = tab.getAttribute('data-category');
-        renderizarMenu(); // Actualiza el menú al tocar una categoría
-    });
-});
-
-tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
         
         // Limpiar búsqueda al cambiar de pestaña
-        searchInput.value = '';
+        if (searchInput) {
+            searchInput.value = '';
+        }
         busquedaActual = '';
 
         categoriaActual = tab.getAttribute('data-category');
