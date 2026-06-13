@@ -73,7 +73,6 @@ const tabs = document.querySelectorAll('.elegant-tab');
 function cambiarIdioma(idioma) {
     idiomaActual = idioma;
     
-    // Cambiar clases visuales del botón ES/EN
     document.getElementById('lang-es').classList.toggle('active', idioma === 'es');
     document.getElementById('lang-en').classList.toggle('active', idioma === 'en');
 
@@ -84,7 +83,7 @@ function cambiarIdioma(idioma) {
     document.getElementById('tab-principales').textContent = traduccionesUI[idioma]['tab-principales'];
     document.getElementById('tab-postres').textContent = traduccionesUI[idioma]['tab-postres'];
     document.getElementById('tab-vinos').textContent = traduccionesUI[idioma]['tab-vinos'];
-    document.getElementById('ui-footer').textContent = traduccionesUI[idioma]['footer'];
+    
 
     renderizarMenu();
 }

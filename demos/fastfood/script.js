@@ -1,6 +1,6 @@
 // 1. Catálogo Fast Food
 const productos = [
-{
+    {
         id: 5, nombre: "Cheeseburger Clásica", descripcion: "Medallón de 100g, doble cheddar, cebolla en brunoise, kétchup y mostaza en pan brioche.", precio: 6000, categoria: "burgers",
         imagen: "https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=800&auto=format&fit=crop"
     },
@@ -21,7 +21,7 @@ const productos = [
         imagen: "https://images.unsplash.com/photo-1590301157890-4810ed352733?q=80&w=800&auto=format&fit=crop"
     },
     {
-        id: 10, nombre: "Papas Pulled Pork", descripcion: "Papas fritas bañadas en cheddar, coronadas con cerdo desmenuzado a la barbacoa y verdeo.", precio: 5800, categoria: "papas",
+        id: 10, nombre: "Nachos Supreme", descripcion: "Crujientes chips de maíz cubiertos con una lluvia de queso cheddar y mozzarella gratinados, carne braseada, tomate, cebolla morada y chiles frescos.", precio: 5800, categoria: "papas",
         imagen: "https://images.unsplash.com/photo-1640659828941-869eaeb2491e?q=80&w=800&auto=format&fit=crop"
     },
     {
@@ -48,14 +48,13 @@ const tabs = document.querySelectorAll('.pill-btn');
 const menuContainer = document.getElementById('menu-container');
 const titleCategory = document.getElementById('title-category');
 
-// Elementos del Carrito
 const cartCount = document.getElementById('cart-count');
 const cartItemsContainer = document.getElementById('cart-items');
 const cartTotalElement = document.getElementById('cart-total');
 
 let categoriaActual = 'todos';
 let busquedaActual = '';
-let carrito = []; // Acá se guardan los pedidos temporales
+let carrito = []; 
 
 const nombresCategorias = {
     'todos': 'Menú Completo',
@@ -71,7 +70,12 @@ function renderizarMenu() {
 
     const productosFiltrados = productos.filter(producto => {
         const coincideCategoria = categoriaActual === 'todos' || producto.categoria === categoriaActual;
-        const coincideBusqueda = producto.nombre.toLowerCase().includes(busquedaActual.toLowerCase());
+        
+        // ACÁ ESTÁ EL CAMBIO: Ahora busca en el nombre O en la descripción
+        const termino = busquedaActual.toLowerCase();
+        const coincideBusqueda = producto.nombre.toLowerCase().includes(termino) || 
+                                 producto.descripcion.toLowerCase().includes(termino);
+        
         return coincideCategoria && coincideBusqueda;
     });
 
@@ -86,7 +90,6 @@ function renderizarMenu() {
         return;
     }
 
-    // Dibujar Tarjetas con Botón de Agregar
     productosFiltrados.forEach(producto => {
         const cardHTML = `
             <div class="urban-card animate-fade">
@@ -107,15 +110,11 @@ function renderizarMenu() {
     });
 }
 
-// ==========================================
-// LÓGICA DEL CARRITO
-// ==========================================
-
+// 4. Lógica del Carrito
 function agregarAlCarrito(idProducto) {
     const producto = productos.find(p => p.id === idProducto);
-    
-    // Verificamos si ya está en el carrito para sumarle cantidad
     const itemExistente = carrito.find(item => item.id === idProducto);
+    
     if (itemExistente) {
         itemExistente.cantidad++;
     } else {
@@ -168,28 +167,23 @@ function actualizarInterfazCarrito() {
     cartTotalElement.textContent = `$${total}`;
 }
 
-// Preparar el mensaje y mandar a WhatsApp
-// Preparar el mensaje y mandar a WhatsApp (VERSIÓN CON FORMULARIO)
+// 5. WhatsApp
 function enviarPedidoWsp() {
     if (carrito.length === 0) {
         alert("¡Tu carrito está vacío!");
         return;
     }
 
-    // Capturar datos del cliente
     const nombre = document.getElementById('cliente-nombre').value.trim();
     const direccion = document.getElementById('cliente-direccion').value.trim();
     const notas = document.getElementById('cliente-notas').value.trim();
 
-    // Validar que llenen los datos mínimos
     if (!nombre || !direccion) {
         alert("Por favor, completá tu nombre y dirección antes de enviar el pedido.");
         return;
     }
 
     let total = 0;
-    
-    // Armado del mensaje prolijo
     let textoWsp = " *NUEVO PEDIDO - URBAN BURGER* \n\n";
     textoWsp += `👤 *Cliente:* ${nombre}\n`;
     textoWsp += `📍 *Dirección:* ${direccion}\n\n`;
@@ -208,33 +202,28 @@ function enviarPedidoWsp() {
     }
 
     const mensajeCodificado = encodeURIComponent(textoWsp);
-    
-    // Acá va tu número
     const numeroWhatsApp = "5493884340135";
     const url = `https://wa.me/${numeroWhatsApp}?text=${mensajeCodificado}`;
 
     window.open(url, '_blank');
 }
 
-// ==========================================
-// LISTENERS INICIALES
-// ==========================================
-searchInput.addEventListener('input', (e) => {
-    busquedaActual = e.target.value;
-    renderizarMenu();
-});
+// 6. Buscador y Categorías (Event Listeners)
+if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+        busquedaActual = e.target.value; 
+        renderizarMenu(); // Actualiza el menú en tiempo real al escribir
+    });
+}
 
 tabs.forEach(tab => {
     tab.addEventListener('click', () => {
         tabs.forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
-        
-        searchInput.value = '';
-        busquedaActual = '';
-
         categoriaActual = tab.getAttribute('data-category');
-        renderizarMenu();
+        renderizarMenu(); // Actualiza el menú al tocar una categoría
     });
 });
 
+// 7. Arrancar la aplicación
 renderizarMenu();

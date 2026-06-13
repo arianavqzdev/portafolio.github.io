@@ -136,9 +136,20 @@ function renderizarMenu() {
 }
 
 // 4. Listeners
-searchInput.addEventListener('input', (e) => {
-    busquedaActual = e.target.value;
-    renderizarMenu();
+if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+        busquedaActual = e.target.value; 
+        renderizarMenu(); // Actualiza el menú en tiempo real al escribir
+    });
+}
+
+tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        categoriaActual = tab.getAttribute('data-category');
+        renderizarMenu(); // Actualiza el menú al tocar una categoría
+    });
 });
 
 tabs.forEach(tab => {
